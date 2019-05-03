@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
   before_action :require_user_logged_in
   before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :check_user, only: [:show, :edit, :update, :destroy]
   
   def index
     if logged_in?
@@ -51,12 +52,19 @@ class TasksController < ApplicationController
   private
   
   def set_task
-    @task = Task.find(params[:id])
+    @task = Task.find_by(id: params[:id])
   end
   
   # Strong Parameter
   def task_params
     params.require(:task).permit(:content, :status)
+  end
+  
+  def check_user
+    if @task.blank? || @task.user != current_user
+      flash[:danger] = "あなたにid#{@task.id}のタスクを見る権限はありません。"
+      redirect_to root_url
+    end
   end
 
 end

@@ -7,6 +7,7 @@ class UsersController < ApplicationController
   def show
     # showは不要
     @user = User.find(params[:id])
+    redirect_to current_user if @user != current_user
   end
 
   def new
